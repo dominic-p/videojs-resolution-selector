@@ -55,24 +55,24 @@
 	};
 	
 	// Define our resolution selector button
-	_V_.ResolutionSelector = _V_.Button.extend({
+	_V_.ResolutionSelector = _V_.MenuButton.extend({
 		
 		/** @constructor */
 		init : function( player, options ) {
 			
-			_V_.Button.call( this, player, options );
+			_V_.MenuButton.call( this, player, options );
+			
+			// Copy the player object for the createItems function
+			this.player = player;
 			
 			// Add our list of available resolutions to the player object
 			player.availableRes = options.available_res;
 			
-			console.log( this );
-			
-			/*
 			// Hide the button if we have 1 or fewer items
 			if ( this.items.length <= 1 ) {
 				
 				this.hide();
-			}*/
+			}
 		}
 	});
 	
@@ -82,9 +82,11 @@
 		var items = [],
 			current_res;
 		
-		for ( current_res in this.availableRes ) {
+		for ( current_res in this.player.availableRes ) {
 			
-			items.push( new _V_.ResolutionMenuItem() );
+			items.push( new _V_.ResolutionMenuItem( this.player, {
+				res : current_res
+			} ) );
 		}
 		
 		return items;
@@ -141,7 +143,7 @@
 					i--;
 					
 					j = available_res[current_res].length;
-					found_type = false;
+					found_types = 0;
 					
 					// For each required type loop through the available sources to check if its there
 					while ( j > 0 ) {
@@ -150,12 +152,11 @@
 						
 						if ( settings.force_types[i] === available_res[current_res][j].type ) {
 							
-							found_type = true;
-							break;
+							found_types++;
 						}
 					} // End loop through current resolution sources
 					
-					if ( ! found_type ) {
+					if ( found_types < settings.force_types.length ) {
 						
 						delete available_res[current_res];
 						available_res.length--;
