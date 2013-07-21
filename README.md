@@ -6,7 +6,7 @@ Usage
 -----
 Add an extra attribute to your `<source />` elements.
 
-  <video>
+	<video>
 		<source data-res="480" src="..." type="..." />
 		<source data-res="240" src="..." type="..." />
 	</video>
@@ -22,4 +22,4 @@ Optionally, you can pass some settings to the plugin:
 
 Things to Work On
 -----------------
-- It would be really cool if this supported an "auto" option that used MPEG-DASH and/or HSL to enable adaptive resolution videos
+- It would be really cool if this supported an "auto" option that used MPEG-DASH and/or HSL to enable adaptive resolution videos in addition to manual selection.
