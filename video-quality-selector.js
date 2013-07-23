@@ -32,7 +32,9 @@
 		}
 	};
 	
-	// Setup our resolution menu items
+	/***********************************************************************************
+	 * Setup our resolution menu items
+	 ***********************************************************************************/
 	_V_.ResolutionMenuItem = _V_.MenuItem.extend({
 		
 		/** @constructor */
@@ -40,36 +42,78 @@
 			
 			// Modify options for parent MenuItem class's init.
 			options['label'] = options.res + 'p';
-			options['selected'] = options.res === player.getCurrentRes();
+			options['selected'] = ( options.res === player.getCurrentRes() );
 			
 			_V_.MenuItem.call( this, player, options );
+			
+			this.resolution = options.res;
+			
+			// Toggle the selected class whenever the resolution changes
+			player.on( 'changeRes', _V_.bind( this, function() {
+				
+				if ( this.resolution == player.getCurrentRes() ) {
+					
+					this.selected( true );
+					
+				} else {
+					
+					this.selected( false );
+				}
+			}));
 		}
 	});
 	
+	// Handle clicks on the menu items
 	_V_.ResolutionMenuItem.prototype.onClick = function() {
 		
 		// Call the parent click handler
 		_V_.MenuItem.prototype.onClick.call( this );
 		
+		var player = this.player(),
+			current_time = player.currentTime(),
+			is_paused = player.paused();
 		
+		// Do nothing if we aren't changing resolutions
+		if ( player.getCurrentRes() == this.resolution ) { return; }
+		
+		// Change the source and make sure we don't start the video over
+		player.src( player.availableRes[this.resolution] ).one( 'loadedmetadata', function() {
+			
+			player.currentTime( current_time );
+			
+			if ( !is_paused ) { player.play(); }
+		});
+		
+		// Save the newly selected resolution in our player options property
+		player.currentRes = this.resolution;
+		
+		// Update the classes to reflect the currently selected resolution
+		player.trigger( 'changeRes' );
 	};
 	
-	// Define our resolution selector button
+	/***********************************************************************************
+	 * Setup our resolution menu title item
+	 ***********************************************************************************/
+	 _V_.ResolutionTitleMenuItem = _V_.MenuItem;
+	 
+	 _V_.ResolutionTitleMenuItem.prototype.onClick = function() {}
+	
+	/***********************************************************************************
+	 * Define our resolution selector button
+	 ***********************************************************************************/
 	_V_.ResolutionSelector = _V_.MenuButton.extend({
 		
 		/** @constructor */
 		init : function( player, options ) {
 			
-			_V_.MenuButton.call( this, player, options );
-			
-			// Copy the player object for the createItems function
-			this.player = player;
-			
 			// Add our list of available resolutions to the player object
 			player.availableRes = options.available_res;
 			
-			// Hide the button if we have 1 or fewer items
-			if ( this.items.length <= 1 ) {
+			// Call the parent constructor
+			_V_.MenuButton.call( this, player, options );
+			
+			// Hide the button if we have 2 or fewer items (one will be the title item)
+			if ( this.items.length <= 2 ) {
 				
 				this.hide();
 			}
@@ -79,12 +123,27 @@
 	// Create a menu item for each available resolution
 	_V_.ResolutionSelector.prototype.createItems = function() {
 		
-		var items = [],
+		var player = this.player(),
+			items = [],
 			current_res;
 		
-		for ( current_res in this.player.availableRes ) {
+		// Add the menu title item
+		items.push( new _V_.ResolutionTitleMenuItem( player, {
 			
-			items.push( new _V_.ResolutionMenuItem( this.player, {
+			el : _V_.Component.prototype.createEl( null, {
+				
+				className	: 'vjs-res-menu-title',
+				innerHTML	: 'Video Quality'
+				
+			})
+		}));
+		
+		// Add an item for each available resolution
+		for ( current_res in player.availableRes ) {
+			
+			if ( 'length' == current_res ) { continue; }
+			
+			items.push( new _V_.ResolutionMenuItem( player, {
 				res : current_res
 			} ) );
 		}
@@ -176,18 +235,37 @@
 			player.currentRes = settings.default_res;
 		}
 		
+		// Helper function to get the current resolution
 		player.getCurrentRes = function() {
 			
-			return player.currentRes || '';
+			if ( typeof player.currentRes !== 'undefined' ) {
+				
+				return player.currentRes;
+				
+			} else {
+				
+				try {
+				
+					return res = player.options().sources[0]['data-res'];
+				
+				} catch(e) {
+					
+					return '';
+				}
+			}
 		}
+		
+		current_res = player.getCurrentRes();
+		
+		if ( current_res ) { current_res += 'p'; }
 		
 		// Add the resolution selector button
 		resolutionSelector = new _V_.ResolutionSelector( player, {
 			
 			el : _V_.Component.prototype.createEl( null, {
 				
-				className	: 'vjs-res-button vjs-control',
-				innerHTML	: '<div class="vjs-control-content">1080p</div>',
+				className	: 'vjs-res-button vjs-menu-button vjs-control',
+				innerHTML	: '<div class="vjs-control-content">' + current_res || 'Quality' + '</div>',
 				role		: 'button',
 				'aria-live'	: 'polite', // let the screen reader user know that the text of the button may change
 				tabIndex	: 0
@@ -196,7 +274,9 @@
 			available_res	: available_res
 		} );
 		
-		player.controlBar.el().appendChild( resolutionSelector.el() );
+		player.controlBar.addChild( resolutionSelector );
+		
+		//player.controlBar.el().appendChild( resolutionSelector.el() );
 	});
 
 })( videojs );

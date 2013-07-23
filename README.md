@@ -23,3 +23,4 @@ Optionally, you can pass some settings to the plugin:
 Things to Work On
 -----------------
 - It would be really cool if this supported an "auto" option that used MPEG-DASH and/or HSL to enable adaptive resolution videos in addition to manual selection.
+- We're relying on several `for ( ... in ... )` style loops. This isn't ideal, and it should be worked on.
