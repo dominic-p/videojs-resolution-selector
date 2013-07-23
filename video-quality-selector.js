@@ -12,8 +12,22 @@
 
 (function( _V_ ) {
 	
+	/***********************************************************************************
+	 * Define some helper functions
+	 ***********************************************************************************/
 	var methods = {
 		
+		/**
+		 * Utility function for merging 2 objects recursively. It treats
+		 * arrays like plain objects and it relies on a for...in loop which will
+		 * break if the Object prototype is messed with.
+		 *
+		 * @param	(object)	destination	The object to modify and return
+		 * @param	(object)	source		The object to use to overwrite the first
+		 * 									object
+		 *
+		 * @returns	(object)	The modified first object is returned
+		 */
 		extend : function( destination, source ) {
 			
 			for ( var prop in source ) {
@@ -29,6 +43,19 @@
 			}
 			
 			return destination;
+		},
+		
+		/**
+		 * In a future version, this can be made more intelligent,
+		 * but for now, we'll just add a "p" at the end.
+		 *
+		 * @param	(string)	res	The resolution to make a label for
+		 *
+		 * @returns	(string)	The label text string
+		 */
+		res_label : function( res ) {
+			
+			return res + 'p';
 		}
 	};
 	
@@ -41,7 +68,7 @@
 		init : function( player, options ){
 			
 			// Modify options for parent MenuItem class's init.
-			options['label'] = options.res + 'p';
+			options['label'] = methods.res_label( options.res );
 			options['selected'] = ( options.res === player.getCurrentRes() );
 			
 			_V_.MenuItem.call( this, player, options );
@@ -71,7 +98,9 @@
 		
 		var player = this.player(),
 			current_time = player.currentTime(),
-			is_paused = player.paused();
+			is_paused = player.paused(),
+			button_nodes = player.controlBar.resolutionSelector.el().firstChild.children,
+			button_node_count = button_nodes.length;
 		
 		// Do nothing if we aren't changing resolutions
 		if ( player.getCurrentRes() == this.resolution ) { return; }
@@ -87,6 +116,18 @@
 		// Save the newly selected resolution in our player options property
 		player.currentRes = this.resolution;
 		
+		// Update the button text
+		while ( button_node_count > 0 ) {
+			
+			button_node_count--;
+			
+			if ( 'vjs-current-res' == button_nodes[button_node_count].className ) {
+				
+				button_nodes[button_node_count].innerHTML = methods.res_label( this.resolution );
+				break;
+			}
+		}
+		
 		// Update the classes to reflect the currently selected resolution
 		player.trigger( 'changeRes' );
 	};
@@ -94,9 +135,9 @@
 	/***********************************************************************************
 	 * Setup our resolution menu title item
 	 ***********************************************************************************/
-	 _V_.ResolutionTitleMenuItem = _V_.MenuItem;
-	 
-	 _V_.ResolutionTitleMenuItem.prototype.onClick = function() {}
+	_V_.ResolutionTitleMenuItem = _V_.MenuItem;
+	
+	_V_.ResolutionTitleMenuItem.prototype.onClick = function() {}
 	
 	/***********************************************************************************
 	 * Define our resolution selector button
@@ -133,7 +174,7 @@
 			el : _V_.Component.prototype.createEl( null, {
 				
 				className	: 'vjs-res-menu-title',
-				innerHTML	: 'Video Quality'
+				innerHTML	: 'Quality'
 				
 			})
 		}));
@@ -151,8 +192,13 @@
 		return items;
 	}
 	
-	// The main plugin function
+	/***********************************************************************************
+	 * Register the plugin with videojs, main plugin function
+	 ***********************************************************************************/
 	_V_.plugin( 'resolutionSelector', function( options ) {
+		
+		// Only enable the plugin on HTML5 videos
+		if ( 'html5' !== this.techName.toLowerCase() ) { return; }
 		
 		// Override default options with those provided
 		var player = this,
@@ -245,9 +291,9 @@
 			} else {
 				
 				try {
-				
+					
 					return res = player.options().sources[0]['data-res'];
-				
+					
 				} catch(e) {
 					
 					return '';
@@ -255,17 +301,17 @@
 			}
 		}
 		
+		// Add the resolution selector button
 		current_res = player.getCurrentRes();
 		
-		if ( current_res ) { current_res += 'p'; }
+		if ( current_res ) { current_res = methods.res_label( current_res ); }
 		
-		// Add the resolution selector button
 		resolutionSelector = new _V_.ResolutionSelector( player, {
 			
 			el : _V_.Component.prototype.createEl( null, {
 				
 				className	: 'vjs-res-button vjs-menu-button vjs-control',
-				innerHTML	: '<div class="vjs-control-content">' + current_res || 'Quality' + '</div>',
+				innerHTML	: '<div class="vjs-control-content"><span class="vjs-current-res">' + current_res || 'Quality' + '</span></div>',
 				role		: 'button',
 				'aria-live'	: 'polite', // let the screen reader user know that the text of the button may change
 				tabIndex	: 0
@@ -274,7 +320,8 @@
 			available_res	: available_res
 		} );
 		
-		player.controlBar.addChild( resolutionSelector );
+		// Add the button to the control bar object and the DOM
+		player.controlBar.resolutionSelector = player.controlBar.addChild( resolutionSelector );
 		
 		//player.controlBar.el().appendChild( resolutionSelector.el() );
 	});
