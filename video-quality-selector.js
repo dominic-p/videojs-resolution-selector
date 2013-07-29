@@ -47,7 +47,8 @@
 		
 		/**
 		 * In a future version, this can be made more intelligent,
-		 * but for now, we'll just add a "p" at the end.
+		 * but for now, we'll just add a "p" at the end if we are passed
+		 * numbers.
 		 *
 		 * @param	(string)	res	The resolution to make a label for
 		 *
@@ -55,7 +56,7 @@
 		 */
 		res_label : function( res ) {
 			
-			return res + 'p';
+			return ( /^\d+$/.test( res ) ) ? res + 'p' : res;
 		}
 	};
 	
@@ -68,12 +69,20 @@
 		init : function( player, options ){
 			
 			// Modify options for parent MenuItem class's init.
-			options['label'] = methods.res_label( options.res );
-			options['selected'] = ( options.res === player.getCurrentRes() );
+			options.label = methods.res_label( options.res );
+			options.selected = ( options.res === player.getCurrentRes() );
 			
+			// Copy the player as a class property
+			this.player = player;
+			
+			// Call the parent constructor
 			_V_.MenuItem.call( this, player, options );
 			
+			// Store the resolution as a call property
 			this.resolution = options.res;
+			
+			// Register our click handler
+			this.on( 'click', this.onClick );
 			
 			// Toggle the selected class whenever the resolution changes
 			player.on( 'changeRes', _V_.bind( this, function() {
@@ -93,10 +102,7 @@
 	// Handle clicks on the menu items
 	_V_.ResolutionMenuItem.prototype.onClick = function() {
 		
-		// Call the parent click handler
-		_V_.MenuItem.prototype.onClick.call( this );
-		
-		var player = this.player(),
+		var player = this.player,
 			current_time = player.currentTime(),
 			is_paused = player.paused(),
 			button_nodes = player.controlBar.resolutionSelector.el().firstChild.children,
@@ -135,9 +141,17 @@
 	/***********************************************************************************
 	 * Setup our resolution menu title item
 	 ***********************************************************************************/
-	_V_.ResolutionTitleMenuItem = _V_.MenuItem;
-	
-	_V_.ResolutionTitleMenuItem.prototype.onClick = function() {}
+	_V_.ResolutionTitleMenuItem = _V_.MenuItem.extend({
+		
+		init : function( player, options ) {
+			
+			// Call the parent constructor
+			_V_.MenuItem.call( this, player, options );
+			
+			// No click handler for the menu title
+			this.off( 'click' );
+		}
+	});
 	
 	/***********************************************************************************
 	 * Define our resolution selector button
@@ -147,24 +161,21 @@
 		/** @constructor */
 		init : function( player, options ) {
 			
+			// Copy the player as an accessible class property
+			this.player = player;
+			
 			// Add our list of available resolutions to the player object
 			player.availableRes = options.available_res;
 			
 			// Call the parent constructor
 			_V_.MenuButton.call( this, player, options );
-			
-			// Hide the button if we have 2 or fewer items (one will be the title item)
-			if ( this.items.length <= 2 ) {
-				
-				this.hide();
-			}
 		}
 	});
 	
 	// Create a menu item for each available resolution
-	_V_.ResolutionSelector.prototype.createItems = function() {
+	_V_.ResolutionSelector.prototype.createItems = function() {		
 		
-		var player = this.player(),
+		var player = this.player,
 			items = [],
 			current_res;
 		
@@ -175,7 +186,6 @@
 				
 				className	: 'vjs-res-menu-title',
 				innerHTML	: 'Quality'
-				
 			})
 		}));
 		
@@ -186,8 +196,21 @@
 			
 			items.push( new _V_.ResolutionMenuItem( player, {
 				res : current_res
-			} ) );
+			}));
 		}
+		
+		// Sort the available resolutions in descending order
+		items.sort(function( a, b ) {
+			
+			if ( typeof a.resolution == 'undefined' ) {
+				
+				return -1;
+				
+			} else {
+				
+				return parseInt( b.resolution ) - parseInt( a.resolution );
+			}
+		});
 		
 		return items;
 	}
@@ -198,7 +221,7 @@
 	_V_.plugin( 'resolutionSelector', function( options ) {
 		
 		// Only enable the plugin on HTML5 videos
-		if ( 'html5' !== this.techName.toLowerCase() ) { return; }
+		if ( ! this.el().firstChild.canPlayType  ) { return; }
 		
 		// Override default options with those provided
 		var player = this,
@@ -292,14 +315,14 @@
 				
 				try {
 					
-					return res = player.options().sources[0]['data-res'];
+					return res = player.tech.options().source['data-res'];
 					
 				} catch(e) {
 					
 					return '';
 				}
 			}
-		}
+		};
 		
 		// Add the resolution selector button
 		current_res = player.getCurrentRes();
@@ -316,14 +339,12 @@
 				'aria-live'	: 'polite', // let the screen reader user know that the text of the button may change
 				tabIndex	: 0
 				
-			} ),
+			}),
 			available_res	: available_res
-		} );
+		});
 		
 		// Add the button to the control bar object and the DOM
 		player.controlBar.resolutionSelector = player.controlBar.addChild( resolutionSelector );
-		
-		//player.controlBar.el().appendChild( resolutionSelector.el() );
 	});
 
 })( videojs );
