@@ -36,6 +36,6 @@ The plugin also triggers a `changeRes` event on the player instance anytime the 
 
 Things to Work On
 -----------------
-- It would be really cool if this supported an "auto" option that used MPEG-DASH and/or HSL to enable adaptive resolution videos in addition to manual selection.
+- It would be really cool if this supported an "auto" option that used MPEG-DASH and/or HLS to enable adaptive resolution videos in addition to manual selection.
 - We're relying on several `for...in` style loops. This isn't ideal, and it should be changed.
 - Right now, this only works for HTML5 videos. In theory, it could be made to [work with Flash](http://help.videojs.com/discussions/questions/605-advise-for-setting-up-video-quality-resolution-selector#comment_15079585) (or even YouTube with some tweaking).
