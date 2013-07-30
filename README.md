@@ -20,6 +20,18 @@ Optionally, you can pass some settings to the plugin:
 
 `force_types` is an array. The plugin will check each resolution to make sure there is a source of each type at that resolution. `default_res` is pretty self explanatory.
 
+The plugin also triggers a `changeRes` event on the player instance anytime the resolution is changed, so your code can listen for that and take any desired action on resolution changes:
+
+	videojs( '#my-video' ).ready(function() {
+		
+		var player = this;
+		
+		player.on( 'changeRes', function() {
+			
+			console.log( 'Current Res is: ' + player.getCurrentRes() );
+		});
+	});
+
 Things to Work On
 -----------------
 - It would be really cool if this supported an "auto" option that used MPEG-DASH and/or HSL to enable adaptive resolution videos in addition to manual selection.

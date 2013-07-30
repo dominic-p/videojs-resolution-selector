@@ -72,9 +72,6 @@
 			options.label = methods.res_label( options.res );
 			options.selected = ( options.res === player.getCurrentRes() );
 			
-			// Copy the player as a class property
-			this.player = player;
-			
 			// Call the parent constructor
 			_V_.MenuItem.call( this, player, options );
 			
@@ -102,7 +99,7 @@
 	// Handle clicks on the menu items
 	_V_.ResolutionMenuItem.prototype.onClick = function() {
 		
-		var player = this.player,
+		var player = this.player(),
 			current_time = player.currentTime(),
 			is_paused = player.paused(),
 			button_nodes = player.controlBar.resolutionSelector.el().firstChild.children,
@@ -161,9 +158,6 @@
 		/** @constructor */
 		init : function( player, options ) {
 			
-			// Copy the player as an accessible class property
-			this.player = player;
-			
 			// Add our list of available resolutions to the player object
 			player.availableRes = options.available_res;
 			
@@ -175,16 +169,16 @@
 	// Create a menu item for each available resolution
 	_V_.ResolutionSelector.prototype.createItems = function() {		
 		
-		var player = this.player,
+		var player = this.player(),
 			items = [],
 			current_res;
 		
 		// Add the menu title item
 		items.push( new _V_.ResolutionTitleMenuItem( player, {
 			
-			el : _V_.Component.prototype.createEl( null, {
+			el : _V_.Component.prototype.createEl( 'li', {
 				
-				className	: 'vjs-res-menu-title',
+				className	: 'vjs-menu-title vjs-res-menu-title',
 				innerHTML	: 'Quality'
 			})
 		}));
@@ -192,6 +186,7 @@
 		// Add an item for each available resolution
 		for ( current_res in player.availableRes ) {
 			
+			// Don't add an item for the length attribute
 			if ( 'length' == current_res ) { continue; }
 			
 			items.push( new _V_.ResolutionMenuItem( player, {
@@ -263,6 +258,9 @@
 			// Loop through all available resoultions
 			for ( current_res in available_res ) {
 				
+				// Don't count the length property as a resolution
+				if ( 'length' == current_res ) { continue; }
+				
 				i = settings.force_types.length;
 				
 				// For each resolution loop through the required types
@@ -315,7 +313,7 @@
 				
 				try {
 					
-					return res = player.tech.options().source['data-res'];
+					return res = player.options().sources[0]['data-res'];
 					
 				} catch(e) {
 					
@@ -324,17 +322,18 @@
 			}
 		};
 		
-		// Add the resolution selector button
+		// Get the started resolution
 		current_res = player.getCurrentRes();
 		
 		if ( current_res ) { current_res = methods.res_label( current_res ); }
 		
+		// Add the resolution selector button
 		resolutionSelector = new _V_.ResolutionSelector( player, {
 			
 			el : _V_.Component.prototype.createEl( null, {
 				
 				className	: 'vjs-res-button vjs-menu-button vjs-control',
-				innerHTML	: '<div class="vjs-control-content"><span class="vjs-current-res">' + current_res || 'Quality' + '</span></div>',
+				innerHTML	: '<div class="vjs-control-content"><span class="vjs-current-res">' + ( current_res || 'Quality' ) + '</span></div>',
 				role		: 'button',
 				'aria-live'	: 'polite', // let the screen reader user know that the text of the button may change
 				tabIndex	: 0
