@@ -213,7 +213,7 @@
 		});
 		
 		return items;
-	}
+	};
 	
 	/***********************************************************************************
 	 * Register the plugin with videojs, main plugin function
