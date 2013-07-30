@@ -4,6 +4,8 @@ Add a resolution selector button to Video.js to allow users to manually adjust t
 
 Usage
 -----
+As of 7-30-2013, you have to either use the copy of video.js in the lib folder of this repo, or [build your own copy](https://github.com/videojs/video.js/blob/master/CONTRIBUTING.md#building-your-own-copy-of-videojs) of the current source. The changes needed to make this work haven't made it into an official release yet.
+
 Add an extra attribute to your `<source />` elements.
 
 	<video>
