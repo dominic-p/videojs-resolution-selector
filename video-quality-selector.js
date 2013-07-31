@@ -113,7 +113,7 @@
 			
 			player.currentTime( current_time );
 			
-			if ( !is_paused ) { player.play(); }
+			if ( ! is_paused ) { player.play(); }
 		});
 		
 		// Save the newly selected resolution in our player options property
@@ -239,7 +239,8 @@
 			
 			i--;
 			
-			if ( ! 'data-res' in sources[i] ) { continue; }
+			// Skip sources that don't have data-res attributes
+			if ( ! sources[i]['data-res'] ) { continue; }
 			
 			current_res = sources[i]['data-res'];
 			
