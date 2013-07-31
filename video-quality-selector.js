@@ -70,7 +70,7 @@
 			
 			// Modify options for parent MenuItem class's init.
 			options.label = methods.res_label( options.res );
-			options.selected = ( options.res === player.getCurrentRes() );
+			options.selected = ( options.res.toString() === player.getCurrentRes().toString() );
 			
 			// Call the parent constructor
 			_V_.MenuItem.call( this, player, options );
