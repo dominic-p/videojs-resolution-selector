@@ -18,7 +18,7 @@ Optionally, you can pass some settings to the plugin:
     plugins : { resolutionSelector : {
     	force_types	: [ 'video/mp4', 'video/webm' ],
     	default_res	: "480"
-    }
+    } }
 
 `force_types` is an array. The plugin will check each resolution to make sure there is a source of each type at that resolution. `default_res` is pretty self explanatory.
 
