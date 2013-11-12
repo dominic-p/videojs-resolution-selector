@@ -100,6 +100,7 @@
 	_V_.ResolutionMenuItem.prototype.onClick = function() {
 		
 		var player = this.player(),
+			video_el = player.el().firstChild,
 			current_time = player.currentTime(),
 			is_paused = player.paused(),
 			button_nodes = player.controlBar.resolutionSelector.el().firstChild.children,
@@ -108,7 +109,10 @@
 		// Do nothing if we aren't changing resolutions
 		if ( player.getCurrentRes() == this.resolution ) { return; }
 		
-		// Change the source and make sure we don't start the video over
+		// Make sure the loadedmetadata event will fire
+		if ( 'none' == video_el.preload ) { video_el.preload = 'metadata'; }
+		
+		// Change the source and make sure we don't start the video over		
 		player.src( player.availableRes[this.resolution] ).one( 'loadedmetadata', function() {
 			
 			player.currentTime( current_time );
