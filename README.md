@@ -13,12 +13,12 @@ Add an extra attribute to your `<source />` elements.
 		<source data-res="240" src="..." type="..." />
 	</video>
 
-Optionally, you can pass some settings to the plugin:
+Enable the plugin as described in the [video.js docs](https://github.com/videojs/video.js/blob/v4.5.2/docs/guides/plugins.md#step-3-using-a-plugin). You can also checkout the `example.html` file in this repo to see how the plugin is setup. Optionally, you can pass some settings to the plugin:
 
-    plugins : { resolutionSelector : {
+    videojs( '#my-video', { plugins : { resolutionSelector : {
     	force_types	: [ 'video/mp4', 'video/webm' ],
     	default_res	: "480"
-    } }
+    } } } );
 
 `force_types` is an array. The plugin will check each resolution to make sure there is a source of each type at that resolution. `default_res` is pretty self explanatory.
 
