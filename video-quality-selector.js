@@ -32,6 +32,10 @@
 			
 			for ( var prop in source ) {
 				
+				// Sanity check
+				if ( ! source.hasOwnProperty( prop ) ) { continue; }
+				
+				// Enable recursive (deep) object extension
 				if ( typeof source[prop] == 'object' && null !== source[prop] ) {
 					
 					destination[prop] = methods.extend( destination[prop] || {}, source[prop] );
@@ -222,21 +226,26 @@
 		// Only enable the plugin on HTML5 videos
 		if ( ! this.el().firstChild.canPlayType  ) { return; }
 		
-		// Override default options with those provided
 		var player = this,
 			sources	= player.options().sources,
 			i = sources.length,
 			j,
 			found_type,
+			
+			// Override default options with those provided
 			settings = methods.extend({
 				
-				default_res	: null,		// (string)	The resolution that should be selected by default
+				default_res	: '',		// (string)	The resolution that should be selected by default ( '480' or  '480,1080,240' )
 				force_types	: false		// (array)	List of media types. If passed, we need to have source for each type in each resolution or that resolution will not be an option
 				
 			}, options || {} ),
+			
 			available_res = { length : 0 },
 			current_res,
-			resolutionSelector;
+			resolutionSelector,
+			
+			// Split default resolutions if set and valid, otherwise default to an empty array
+			default_resolutions = ( settings.default_res && typeof settings.default_res == 'string' ) ? settings.default_res.split( ',' ) : [];
 		
 		// Get all of the available resoloutions
 		while ( i > 0 ) {
@@ -300,11 +309,16 @@
 		// Make sure we have at least 2 available resolutions before we add the button
 		if ( available_res.length < 2 ) { return; }
 		
-		// Set the video to start out with the default res if it's available
-		if ( settings.default_res && available_res[settings.default_res] ) {
+		// Loop through the choosen default resolutions if there were any
+		for ( i = 0; i < default_resolutions.length; i++ ) {
 			
-			player.src( available_res[settings.default_res] );
-			player.currentRes = settings.default_res;
+			// Set the video to start out with the first available default res
+			if ( available_res[default_resolutions[i]] ) {
+				
+				player.src( available_res[default_resolutions[i]] );
+				player.currentRes = default_resolutions[i];
+				break;
+			}
 		}
 		
 		// Helper function to get the current resolution

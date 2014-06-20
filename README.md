@@ -20,7 +20,9 @@ Enable the plugin as described in the [video.js docs](https://github.com/videojs
     	default_res	: "480"
     } } } );
 
-`force_types` is an array. The plugin will check each resolution to make sure there is a source of each type at that resolution. `default_res` is pretty self explanatory.
+`force_types` is an array. The plugin will check each resolution to make sure there is a source of each type at that resolution.
+
+`default_res` must be a string. You can either specify a single resolution or a comma separated list (e.g. "480,240"). When using a list, the first available resolution in the list will be selected by default.
 
 The plugin also triggers a `changeRes` event on the player instance anytime the resolution is changed, so your code can listen for that and take any desired action on resolution changes:
 
@@ -40,4 +42,4 @@ Things to Work On
 - We're relying on several `for...in` style loops. This isn't ideal, and it should be changed.
 - Add a generic `change_res` method on the `player` object to allow resolution to be changed via js instead of just `onClick`
 - Implement a preload system to make changing resolutions smoother (see [issue #7](https://github.com/dominic-p/videojs-resolution-selector/issues/7))
-- Right now, this only works for HTML5 videos. In theory, it could be made to [work with Flash](http://help.videojs.com/discussions/questions/605-advise-for-setting-up-video-quality-resolution-selector#comment_15079585) (or even YouTube with some tweaking).
+- Right now, this only works for HTML5 videos. In theory, it could be made to [work with Flash](http://help.videojs.com/discussions/questions/605-advise-for-setting-up-video-quality-resolution-selector#comment_15079585).
