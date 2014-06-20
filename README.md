@@ -22,7 +22,7 @@ Enable the plugin as described in the [video.js docs](https://github.com/videojs
 
 `force_types` is an array. The plugin will check each resolution to make sure there is a source of each type at that resolution.
 
-`default_res` must be a string. You can either specify a single resolution or a comma separated list (e.g. "480,240"). When using a list, the first available resolution in the list will be selected by default.
+`default_res` must be a string. You can either specify a single resolution or a comma separated list (e.g. `"480,240"`). When using a list, the first available resolution in the list will be selected by default.
 
 The plugin also triggers a `changeRes` event on the player instance anytime the resolution is changed, so your code can listen for that and take any desired action on resolution changes:
 
