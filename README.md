@@ -38,7 +38,7 @@ The plugin also triggers a `changeRes` event on the player instance anytime the 
 
 Things to Work On
 -----------------
-- It would be really cool if this supported an "auto" option that used MPEG-DASH and/or HLS to enable adaptive resolution videos in addition to manual selection.
+- It would be really cool if this supported an "auto" option that used MPEG-DASH and/or HLS to enable adaptive resolution videos in addition to manual selection. [DASH playback](https://github.com/Dash-Industry-Forum/dash.js/tree/development/contrib/videojs) tech now available. See [blog post](http://blog.videojs.com/post/92536319027/dash-everywhere-ish-hack-project) on DASH support.
 - We're relying on several `for...in` style loops. This isn't ideal, and it should be changed.
 - Add a generic `change_res` method on the `player` object to allow resolution to be changed via js instead of just `onClick`
 - Implement a preload system to make changing resolutions smoother (see [issue #7](https://github.com/dominic-p/videojs-resolution-selector/issues/7))
