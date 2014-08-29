@@ -36,6 +36,14 @@ The plugin also triggers a `changeRes` event on the player instance anytime the 
 		});
 	});
 
+Mobile devices
+--------------
+You need to enable the video.js controls on mobile devices, because the native controls are default on iOS and Android.
+
+	<video data-setup='{"customControlsOnMobile": true}'>
+		...
+	</video>
+
 Things to Work On
 -----------------
 - It would be really cool if this supported an "auto" option that used MPEG-DASH and/or HLS to enable adaptive resolution videos in addition to manual selection. [DASH playback](https://github.com/Dash-Industry-Forum/dash.js/tree/development/contrib/videojs) tech now available. See [blog post](http://blog.videojs.com/post/92536319027/dash-everywhere-ish-hack-project) on DASH support.
