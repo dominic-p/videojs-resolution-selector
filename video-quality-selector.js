@@ -84,6 +84,22 @@
 			
 			// Register our click handler
 			this.on( 'click', this.onClick );
+
+			// Register touch handler
+			var touchstart = false;
+			this.on('touchstart', function () {
+				touchstart = true;
+			});
+			this.on('touchmove', function () {
+				touchstart = false;
+			});
+			this.on('touchend', _V_.bind(this, function (event) {
+				if (touchstart) {
+					this.onClick(event);
+				}
+				event.preventDefault();
+				event.stopPropagation();
+			}));
 			
 			// Toggle the selected class whenever the resolution changes
 			player.on( 'changeRes', _V_.bind( this, function() {
