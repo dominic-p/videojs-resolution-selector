@@ -72,6 +72,8 @@
 		/** @constructor */
 		init : function( player, options ){
 			
+			var touchstart = false;
+			
 			// Modify options for parent MenuItem class's init.
 			options.label = methods.res_label( options.res );
 			options.selected = ( options.res.toString() === player.getCurrentRes().toString() );
@@ -86,17 +88,17 @@
 			this.on( 'click', this.onClick );
 
 			// Register touch handler
-			var touchstart = false;
-			this.on('touchstart', function () {
-				touchstart = true;
-			});
-			this.on('touchmove', function () {
-				touchstart = false;
-			});
-			this.on('touchend', _V_.bind(this, function (event) {
-				if (touchstart) {
-					this.onClick(event);
+			this.on( 'touchstart', function () { touchstart = true; });
+			
+			this.on( 'touchmove', function () { touchstart = false; });
+			
+			this.on( 'touchend', _V_.bind( this, function ( event ) {
+				
+				if ( touchstart ) {
+					
+					this.onClick( event );
 				}
+				
 				event.preventDefault();
 				event.stopPropagation();
 			}));

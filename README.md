@@ -38,7 +38,7 @@ The plugin also triggers a `changeRes` event on the player instance anytime the 
 
 Mobile devices
 --------------
-You need to enable the video.js controls on mobile devices, because the native controls are default on iOS and Android.
+If you want this plugin to work on mobile devices, you need to enable the video.js controls because the native controls are default on iOS and Android.
 
 	<video data-setup='{"customControlsOnMobile": true}'>
 		...
