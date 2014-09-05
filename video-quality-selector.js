@@ -18,38 +18,6 @@
 	var methods = {
 		
 		/**
-		 * Utility function for merging 2 objects recursively. It treats
-		 * arrays like plain objects and it relies on a for...in loop which will
-		 * break if the Object prototype is messed with.
-		 *
-		 * @param	(object)	destination	The object to modify and return
-		 * @param	(object)	source		The object to use to overwrite the first
-		 * 									object
-		 *
-		 * @returns	(object)	The modified first object is returned
-		 */
-		extend : function( destination, source ) {
-			
-			for ( var prop in source ) {
-				
-				// Sanity check
-				if ( ! source.hasOwnProperty( prop ) ) { continue; }
-				
-				// Enable recursive (deep) object extension
-				if ( typeof source[prop] == 'object' && null !== source[prop] ) {
-					
-					destination[prop] = methods.extend( destination[prop] || {}, source[prop] );
-					
-				} else {
-					
-					destination[prop] = source[prop];
-				}
-			}
-			
-			return destination;
-		},
-		
-		/**
 		 * In a future version, this can be made more intelligent,
 		 * but for now, we'll just add a "p" at the end if we are passed
 		 * numbers.
@@ -81,12 +49,12 @@
 			// Call the parent constructor
 			_V_.MenuItem.call( this, player, options );
 			
-			// Store the resolution as a call property
+			// Store the resolution as a property
 			this.resolution = options.res;
 			
-			// Register our click handler
-			this.on( 'click', this.onClick );
-
+			// The parent constructor registers the click handler for us, so this would cause the event to fire twice
+			// this.on( 'click', this.onClick );
+			
 			// Register touch handler
 			this.on( 'touchstart', function () { touchstart = true; });
 			
@@ -121,44 +89,8 @@
 	// Handle clicks on the menu items
 	_V_.ResolutionMenuItem.prototype.onClick = function() {
 		
-		var player = this.player(),
-			video_el = player.el().firstChild,
-			current_time = player.currentTime(),
-			is_paused = player.paused(),
-			button_nodes = player.controlBar.resolutionSelector.el().firstChild.children,
-			button_node_count = button_nodes.length;
-		
-		// Do nothing if we aren't changing resolutions
-		if ( player.getCurrentRes() == this.resolution ) { return; }
-		
-		// Make sure the loadedmetadata event will fire
-		if ( 'none' == video_el.preload ) { video_el.preload = 'metadata'; }
-		
-		// Change the source and make sure we don't start the video over		
-		player.src( player.availableRes[this.resolution] ).one( 'loadedmetadata', function() {
-			
-			player.currentTime( current_time );
-			
-			if ( ! is_paused ) { player.play(); }
-		});
-		
-		// Save the newly selected resolution in our player options property
-		player.currentRes = this.resolution;
-		
-		// Update the button text
-		while ( button_node_count > 0 ) {
-			
-			button_node_count--;
-			
-			if ( 'vjs-current-res' == button_nodes[button_node_count].className ) {
-				
-				button_nodes[button_node_count].innerHTML = methods.res_label( this.resolution );
-				break;
-			}
-		}
-		
-		// Update the classes to reflect the currently selected resolution
-		player.trigger( 'changeRes' );
+		// Call the player.changeRes method
+		this.player().changeRes( this.resolution );
 	};
 	
 	/***********************************************************************************
@@ -242,8 +174,11 @@
 	_V_.plugin( 'resolutionSelector', function( options ) {
 		
 		// Only enable the plugin on HTML5 videos
-		if ( ! this.el().firstChild.canPlayType  ) { return; }
+		if ( ! this.el().firstChild.canPlayType  ) { return; }	
 		
+		/*******************************************************************
+		 * Setup variables, parse settings
+		 *******************************************************************/
 		var player = this,
 			sources	= player.options().sources,
 			i = sources.length,
@@ -251,7 +186,7 @@
 			found_type,
 			
 			// Override default options with those provided
-			settings = methods.extend({
+			settings = _V_.util.mergeOptions({
 				
 				default_res	: '',		// (string)	The resolution that should be selected by default ( '480' or  '480,1080,240' )
 				force_types	: false		// (array)	List of media types. If passed, we need to have source for each type in each resolution or that resolution will not be an option
@@ -294,34 +229,36 @@
 				if ( 'length' == current_res ) { continue; }
 				
 				i = settings.force_types.length;
+				found_types = 0;
 				
-				// For each resolution loop through the required types
+				// Loop through all required types
 				while ( i > 0 ) {
 					
 					i--;
 					
 					j = available_res[current_res].length;
-					found_types = 0;
 					
-					// For each required type loop through the available sources to check if its there
+					// Loop through all available sources in current resolution
 					while ( j > 0 ) {
 						
 						j--;
 						
+						// Check if the current source matches the current type we're checking
 						if ( settings.force_types[i] === available_res[current_res][j].type ) {
 							
 							found_types++;
+							break;
 						}
-					} // End loop through current resolution sources
-					
-					if ( found_types < settings.force_types.length ) {
-						
-						delete available_res[current_res];
-						available_res.length--;
-						break;
 					}
-				} // End loop through required types
-			} // End loop through resolutions
+				}
+				
+				// If we didn't find sources for all of the required types in the current res, remove it
+				if ( found_types < settings.force_types.length ) {
+					
+					delete available_res[current_res];
+					available_res.length--;
+				}
+			}
 		}
 		
 		// Make sure we have at least 2 available resolutions before we add the button
@@ -338,6 +275,10 @@
 				break;
 			}
 		}
+		
+		/*******************************************************************
+		 * Add methods to player object
+		 *******************************************************************/
 		
 		// Helper function to get the current resolution
 		player.getCurrentRes = function() {
@@ -359,7 +300,113 @@
 			}
 		};
 		
-		// Get the started resolution
+		// Define the change res method
+		player.changeRes = function( target_resolution ) {
+			
+			var video_el = player.el().firstChild,
+				is_paused = player.paused(),
+				current_time,
+				button_nodes,
+				button_node_count,
+				dummy_vid,
+				dummy_src,
+				doc = document,
+				i;
+			
+			// Do nothing if we aren't changing resolutions or if the resolution isn't defined
+			if ( player.getCurrentRes() == target_resolution
+				|| ! player.availableRes
+				|| ! player.availableRes[target_resolution] ) { return; }
+			
+			// Make sure the loadedmetadata event will fire
+			if ( 'none' == video_el.preload ) { video_el.preload = 'metadata'; }
+			
+			// Preload the new resolution
+			player.addClass( 'vjs-waiting' );
+			
+			// Create a dummy video element to use to preload the new resolution
+			dummy_vid = doc.createElement( 'video' );
+			
+			i = player.availableRes[target_resolution].length;
+			
+			while ( i > 0 ) {
+				
+				i--;
+				
+				dummy_src = doc.createElement( 'source' );
+				dummy_src.setAttribute( 'src', player.availableRes[target_resolution][i].src );
+				dummy_src.setAttribute( 'type', player.availableRes[target_resolution][i].type );
+				
+				dummy_vid.appendChild( dummy_src );
+			}
+			
+			// Init Video.js on our dummy video
+			_V_( dummy_vid, {}, function() {
+				
+				dummy_vid = this;
+				
+				// Wait for the dummy video to be ready
+				dummy_vid.one( 'loadedmetadata', function() {
+					
+					// Set the dummy video to the current time
+					dummy_vid.currentTime( player.currentTime() );
+					
+					// Wait for the dummy video to be ready again after setting the time
+					dummy_vid.one( 'canplay', function() {
+						
+						player.removeClass( 'vjs-waiting' );
+						
+						// Get the current time
+						current_time = player.currentTime();
+						
+						// Change the source and make sure we don't start the video over		
+						player.src( player.availableRes[target_resolution] ).one( 'loadedmetadata', function() {
+							
+							player.currentTime( current_time );
+							
+							// If the video was paused, don't show the poster image again
+							player.addClass( 'vjs-has-started' );
+							
+							if ( ! is_paused ) { player.play(); }
+						});
+						
+						// Save the newly selected resolution in our player options property
+						player.currentRes = target_resolution;
+						
+						// Make sure the button has been added to the control bar
+						if ( player.controlBar.resolutionSelector ) {
+							
+							button_nodes = player.controlBar.resolutionSelector.el().firstChild.children;
+							button_node_count = button_nodes.length;
+							
+							// Update the button text
+							while ( button_node_count > 0 ) {
+								
+								button_node_count--;
+								
+								if ( 'vjs-current-res' == button_nodes[button_node_count].className ) {
+									
+									button_nodes[button_node_count].innerHTML = methods.res_label( target_resolution );
+									break;
+								}
+							}
+						}
+						
+						// Update the classes to reflect the currently selected resolution
+						player.trigger( 'changeRes' );
+						
+						// Destroy our dummy video
+						dummy_vid.dispose();
+					});
+				});
+			});
+		};
+		
+		/*******************************************************************
+		 * Add the resolution selector button
+		 *******************************************************************/
+		
+		// Get the starting resolution
 		current_res = player.getCurrentRes();
 		
 		if ( current_res ) { current_res = methods.res_label( current_res ); }

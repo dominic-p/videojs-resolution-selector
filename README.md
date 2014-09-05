@@ -36,6 +36,8 @@ The plugin also triggers a `changeRes` event on the player instance anytime the 
 		});
 	});
 
+The plugin provides a `changeRes` method on the `player` object. You can call it like so (after your player is ready): `player.changeRes( '480' )`.
+	
 Mobile devices
 --------------
 If you want this plugin to work on mobile devices, you need to enable the video.js controls because the native controls are default on iOS and Android.
@@ -43,11 +45,3 @@ If you want this plugin to work on mobile devices, you need to enable the video.
 	<video data-setup='{"customControlsOnMobile": true}'>
 		...
 	</video>
-
-Things to Work On
------------------
-- It would be really cool if this supported an "auto" option that used MPEG-DASH and/or HLS to enable adaptive resolution videos in addition to manual selection. [DASH playback](https://github.com/Dash-Industry-Forum/dash.js/tree/development/contrib/videojs) tech now available. See [blog post](http://blog.videojs.com/post/92536319027/dash-everywhere-ish-hack-project) on DASH support.
-- We're relying on several `for...in` style loops. This isn't ideal, and it should be changed.
-- Add a generic `change_res` method on the `player` object to allow resolution to be changed via js instead of just `onClick`
-- Implement a preload system to make changing resolutions smoother (see [issue #7](https://github.com/dominic-p/videojs-resolution-selector/issues/7))
-- Right now, this only works for HTML5 videos. In theory, it could be made to [work with Flash](http://help.videojs.com/discussions/questions/605-advise-for-setting-up-video-quality-resolution-selector#comment_15079585).
