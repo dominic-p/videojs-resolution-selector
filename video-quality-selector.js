@@ -37,6 +37,9 @@
 	 ***********************************************************************************/
 	_V_.ResolutionMenuItem = _V_.MenuItem.extend({
 		
+		// Call variable to prevent the resolution change from being called twice
+		call_count : 0,
+		
 		/** @constructor */
 		init : function( player, options ){
 			
@@ -52,24 +55,8 @@
 			// Store the resolution as a property
 			this.resolution = options.res;
 			
-			// The parent constructor registers the click handler for us, so this would cause the event to fire twice
-			// this.on( 'click', this.onClick );
-			
-			// Register touch handler
-			this.on( 'touchstart', function () { touchstart = true; });
-			
-			this.on( 'touchmove', function () { touchstart = false; });
-			
-			this.on( 'touchend', _V_.bind( this, function ( event ) {
-				
-				if ( touchstart ) {
-					
-					this.onClick( event );
-				}
-				
-				event.preventDefault();
-				event.stopPropagation();
-			}));
+			// Register our click and tap handlers
+			this.on( ['click', 'tap'], this.onClick );
 			
 			// Toggle the selected class whenever the resolution changes
 			player.on( 'changeRes', _V_.bind( this, function() {
@@ -82,6 +69,9 @@
 					
 					this.selected( false );
 				}
+				
+				// Reset the call count
+				this.call_count = 0;
 			}));
 		}
 	});
@@ -89,8 +79,14 @@
 	// Handle clicks on the menu items
 	_V_.ResolutionMenuItem.prototype.onClick = function() {
 		
+		// Check if this has already been called
+		if ( this.call_count > 0 ) { return; }
+		
 		// Call the player.changeRes method
 		this.player().changeRes( this.resolution );
+		
+		// Increment the call counter
+		this.call_count++;
 	};
 	
 	/***********************************************************************************
@@ -305,13 +301,9 @@
 			
 			var video_el = player.el().firstChild,
 				is_paused = player.paused(),
-				current_time,
+				current_time = player.currentTime(),
 				button_nodes,
-				button_node_count,
-				dummy_vid,
-				dummy_src,
-				doc = document,
-				i;
+				button_node_count;
 			
 			// Do nothing if we aren't changing resolutions or if the resolution isn't defined
 			if ( player.getCurrentRes() == target_resolution
@@ -321,85 +313,41 @@
 			// Make sure the loadedmetadata event will fire
 			if ( 'none' == video_el.preload ) { video_el.preload = 'metadata'; }
 			
-			// Preload the new resolution
-			player.addClass( 'vjs-waiting' );
-			
-			// Create a dummy video element to use to preload the new resolution
-			dummy_vid = doc.createElement( 'video' );
-			
-			i = player.availableRes[target_resolution].length;
-			
-			while ( i > 0 ) {
+			// Change the source and make sure we don't start the video over		
+			player.src( player.availableRes[target_resolution] ).one( 'loadedmetadata', function() {
 				
-				i--;
+				player.currentTime( current_time );
 				
-				dummy_src = doc.createElement( 'source' );
-				dummy_src.setAttribute( 'src', player.availableRes[target_resolution][i].src );
-				dummy_src.setAttribute( 'type', player.availableRes[target_resolution][i].type );
+				// If the video was paused, don't show the poster image again
+				player.addClass( 'vjs-has-started' );
 				
-				dummy_vid.appendChild( dummy_src );
+				if ( ! is_paused ) { player.play(); }
+			});
+			
+			// Save the newly selected resolution in our player options property
+			player.currentRes = target_resolution;
+			
+			// Make sure the button has been added to the control bar
+			if ( player.controlBar.resolutionSelector ) {
+				
+				button_nodes = player.controlBar.resolutionSelector.el().firstChild.children;
+				button_node_count = button_nodes.length;
+				
+				// Update the button text
+				while ( button_node_count > 0 ) {
+					
+					button_node_count--;
+					
+					if ( 'vjs-current-res' == button_nodes[button_node_count].className ) {
+						
+						button_nodes[button_node_count].innerHTML = methods.res_label( target_resolution );
+						break;
+					}
+				}
 			}
 			
-			// Init Video.js on our dummy video
-			_V_( dummy_vid, {}, function() {
-				
-				dummy_vid = this;
-				
-				// Wait for the dummy video to be ready
-				dummy_vid.one( 'loadedmetadata', function() {
-					
-					// Set the dummy video to the current time
-					dummy_vid.currentTime( player.currentTime() );
-					
-					// Wait for the dummy video to be ready again after setting the time
-					dummy_vid.one( 'canplay', function() {
-						
-						player.removeClass( 'vjs-waiting' );
-						
-						// Get the current time
-						current_time = player.currentTime();
-						
-						// Change the source and make sure we don't start the video over		
-						player.src( player.availableRes[target_resolution] ).one( 'loadedmetadata', function() {
-							
-							player.currentTime( current_time );
-							
-							// If the video was paused, don't show the poster image again
-							player.addClass( 'vjs-has-started' );
-							
-							if ( ! is_paused ) { player.play(); }
-						});
-						
-						// Save the newly selected resolution in our player options property
-						player.currentRes = target_resolution;
-						
-						// Make sure the button has been added to the control bar
-						if ( player.controlBar.resolutionSelector ) {
-							
-							button_nodes = player.controlBar.resolutionSelector.el().firstChild.children;
-							button_node_count = button_nodes.length;
-							
-							// Update the button text
-							while ( button_node_count > 0 ) {
-								
-								button_node_count--;
-								
-								if ( 'vjs-current-res' == button_nodes[button_node_count].className ) {
-									
-									button_nodes[button_node_count].innerHTML = methods.res_label( target_resolution );
-									break;
-								}
-							}
-						}
-						
-						// Update the classes to reflect the currently selected resolution
-						player.trigger( 'changeRes' );
-						
-						// Destroy our dummy video
-						dummy_vid.dispose();
-					});
-				});
-			});
+			// Update the classes to reflect the currently selected resolution
+			player.trigger( 'changeRes' );
 		};
 		
 		/*******************************************************************
