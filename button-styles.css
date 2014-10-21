@@ -22,3 +22,10 @@ ul li.vjs-menu-title.vjs-res-menu-title:hover {
 	-webkit-box-shadow: none;
 	box-shadow: none;
 }
+
+/* Needed to keep text visible in video.js 4.9 */ 
+.vjs-res-button .vjs-control-text {
+	width: auto;
+	height: auto;
+	clip: auto;
+}

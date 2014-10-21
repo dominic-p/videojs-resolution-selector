@@ -117,11 +117,17 @@
 			
 			// Call the parent constructor
 			_V_.MenuButton.call( this, player, options );
+			
+			// Set the button text based on the option provided
+			this.el().firstChild.firstChild.innerHTML = options.buttonText;
 		}
 	});
 	
+	// Set class for resolution selector button
+	_V_.ResolutionSelector.prototype.className = 'vjs-res-button';
+	
 	// Create a menu item for each available resolution
-	_V_.ResolutionSelector.prototype.createItems = function() {		
+	_V_.ResolutionSelector.prototype.createItems = function() {
 		
 		var player = this.player(),
 			items = [],
@@ -338,7 +344,7 @@
 					
 					button_node_count--;
 					
-					if ( 'vjs-current-res' == button_nodes[button_node_count].className ) {
+					if ( 'vjs-control-text' == button_nodes[button_node_count].className ) {
 						
 						button_nodes[button_node_count].innerHTML = methods.res_label( target_resolution );
 						break;
@@ -361,16 +367,7 @@
 		
 		// Add the resolution selector button
 		resolutionSelector = new _V_.ResolutionSelector( player, {
-			
-			el : _V_.Component.prototype.createEl( null, {
-				
-				className	: 'vjs-res-button vjs-menu-button vjs-control',
-				innerHTML	: '<div class="vjs-control-content"><span class="vjs-current-res">' + ( current_res || 'Quality' ) + '</span></div>',
-				role		: 'button',
-				'aria-live'	: 'polite', // let the screen reader user know that the text of the button may change
-				tabIndex	: 0
-				
-			}),
+			buttonText		: ( current_res || 'Quality' ),
 			available_res	: available_res
 		});
 		
