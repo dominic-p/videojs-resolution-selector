@@ -139,7 +139,7 @@
 			el : _V_.Component.prototype.createEl( 'li', {
 				
 				className	: 'vjs-menu-title vjs-res-menu-title',
-				innerHTML	: 'Quality'
+				innerHTML	: player.localize( 'Quality' )
 			})
 		}));
 		
@@ -282,6 +282,15 @@
 		 * Add methods to player object
 		 *******************************************************************/
 		
+		// Make sure we have player.localize() if it's not defined by Video.js
+		if ( typeof player.localize !== 'function' ) {
+			
+			player.localize = function( string ) {
+				
+				return string;
+			};
+		}
+		
 		// Helper function to get the current resolution
 		player.getCurrentRes = function() {
 			
@@ -367,7 +376,7 @@
 		
 		// Add the resolution selector button
 		resolutionSelector = new _V_.ResolutionSelector( player, {
-			buttonText		: ( current_res || 'Quality' ),
+			buttonText		: player.localize( current_res || 'Quality' ),
 			available_res	: available_res
 		});
 		
