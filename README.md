@@ -40,7 +40,7 @@ The plugin provides a `changeRes` method on the `player` object. You can call it
 
 Styling the Button
 ------------------
-By default, the button will not be visible. You will either need to include the styles from button-styles.css, or use your own icon for the button. To match the rest of the Video.js controls, I recommend using an icon font to style the button, but it's up to you.
+By default, the button will not be visible. You will either need to include the styles from button-styles.css (after the default Video.js styles to override them), or use your own icon for the button. To match the rest of the Video.js controls, I recommend using an icon font to style the button, but it's up to you.
 
 Mobile devices
 --------------
