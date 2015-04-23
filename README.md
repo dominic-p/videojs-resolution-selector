@@ -37,7 +37,11 @@ The plugin also triggers a `changeRes` event on the player instance anytime the 
 	});
 
 The plugin provides a `changeRes` method on the `player` object. You can call it like so (after your player is ready): `player.changeRes( '480' )`.
-	
+
+Styling the Button
+------------------
+By default, the button will not be visible. You will either need to include the styles from button-styles.css, or use your own icon for the button. To match the rest of the Video.js controls, I recommend using an icon font to style the button, but it's up to you.
+
 Mobile devices
 --------------
 If you want this plugin to work on mobile devices, you need to enable the video.js controls because the native controls are default on iOS and Android.
