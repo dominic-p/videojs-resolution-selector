@@ -44,7 +44,7 @@ The plugin provides a `changeRes` method on the `player` object. You can call it
 <head>
 	<link href="//vjs.zencdn.net/4.5/video-js.css" rel="stylesheet" />
 	<script src="//vjs.zencdn.net/4.5/video.js"></script>
-	<link href="video-quality-selector-styles.css" rel="stylesheet" type="text/css" />
+	<link href="video-quality-selector.css" rel="stylesheet" type="text/css" />
 	<script src="video-quality-selector.js"></script>
 </head>
 <body>
