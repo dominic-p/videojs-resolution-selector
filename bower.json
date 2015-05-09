@@ -1,0 +1,16 @@
+{
+  "name": "videojs-resolution-selector",
+  "description": "Adds a resolution selector button to Video.js which allow users to manually adjust the video quality.",
+  "version": "1.0",
+  "main": ["dist/videojs-resolution-selector.js"],
+  "ignore": [
+    "examples",
+    ".gitignore",
+    "bower.json",
+    "package.json",
+    "README.md"
+  ],
+  "dependencies": {
+    "video.js": "~4.2"
+  }
+}

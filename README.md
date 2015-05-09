@@ -13,7 +13,7 @@ Add an extra attribute to your `<source />` elements.
 		<source data-res="240" src="..." type="..." />
 	</video>
 
-Enable the plugin as described in the [video.js docs](https://github.com/videojs/video.js/blob/v4.5.2/docs/guides/plugins.md#step-3-using-a-plugin). You can also checkout the `example.html` file in this repo to see how the plugin is setup. Optionally, you can pass some settings to the plugin:
+Enable the plugin as described in the [video.js docs](https://github.com/videojs/video.js/blob/v4.5.2/docs/guides/plugins.md#step-3-using-a-plugin). You can also checkout the `example/example.html` file in this repo to see how the plugin is setup. Optionally, you can pass some settings to the plugin:
 
     videojs( '#my-video', { plugins : { resolutionSelector : {
     	force_types	: [ 'video/mp4', 'video/webm' ],
@@ -40,7 +40,7 @@ The plugin provides a `changeRes` method on the `player` object. You can call it
 
 Styling the Button
 ------------------
-By default, the button will not be visible. You will either need to include the styles from button-styles.css (after the default Video.js styles to override them), or use your own icon for the button. To match the rest of the Video.js controls, I recommend using an icon font to style the button, but it's up to you.
+By default, the button will not be visible. You will either need to include the styles from video-quality-selector.css (after the default Video.js styles to override them), or use your own icon for the button. To match the rest of the Video.js controls, I recommend using an icon font to style the button, but it's up to you.
 
 Mobile devices
 --------------
