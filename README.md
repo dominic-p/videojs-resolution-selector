@@ -6,12 +6,12 @@ You can use bower (bower install videojs-quality-selector), npm (npm install vid
 
 ##Usage
 Add an extra attribute to your `<source />` elements.
-
+```html
 	<video>
 		<source data-res="480" src="..." type="..." />
 		<source data-res="240" src="..." type="..." />
 	</video>
-
+```
 Enable the plugin as described in the [video.js docs](https://github.com/videojs/video.js/blob/v4.5.2/docs/guides/plugins.md#step-3-using-a-plugin). You can also checkout the `example/example.html` file in this repo to see how the plugin is setup. Optionally, you can pass some settings to the plugin:
 ```js
     videojs( '#my-video', { plugins : { resolutionSelector : {
