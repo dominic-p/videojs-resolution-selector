@@ -13,7 +13,7 @@ Add an extra attribute to your `<source />` elements.
 	</video>
 ```
 Enable the plugin as described in the [video.js docs](https://github.com/videojs/video.js/blob/v4.5.2/docs/guides/plugins.md#step-3-using-a-plugin). You can also checkout the `example/example.html` file in this repo to see how the plugin is setup. Optionally, you can pass some settings to the plugin:
-```js
+```javascript
     videojs( '#my-video', { plugins : { resolutionSelector : {
     	force_types	: [ 'video/mp4', 'video/webm' ],
     	default_res	: "480"
@@ -24,7 +24,7 @@ Enable the plugin as described in the [video.js docs](https://github.com/videojs
 `default_res` must be a string. You can either specify a single resolution or a comma separated list (e.g. `"480,240"`). When using a list, the first available resolution in the list will be selected by default.
 
 The plugin also triggers a `changeRes` event on the player instance anytime the resolution is changed, so your code can listen for that and take any desired action on resolution changes:
-```js
+```javascript
 	videojs( '#my-video', { plugins : resolutionSelector : {} }, function() {
 		
 		var player = this;
