@@ -3,8 +3,8 @@
   "description": "Adds a resolution selector button to Video.js to allow users to manually adjust the video quality.",
   "version": "1.0",
   "main": [
-      "dist/video-quality-selector.js",
-      "dist/video-quality-selector.css"
+      "video-quality-selector.js",
+      "video-quality-selector.css"
   ],
   "author": "Dominic P",
   "repository": {
