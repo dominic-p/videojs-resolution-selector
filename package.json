@@ -1,7 +1,7 @@
 {
     "name": "videojs-resolution-selector",
     "description": "Adds a resolution selector button to Video.js to allow users to manually adjust the video quality.",
-    "version": "1.0",
+    "version": "1.0.0",
     "author": "Dominic P",
     "license": "MIT",
     "main": "video-quality-selector.js",
