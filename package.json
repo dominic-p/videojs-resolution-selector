@@ -4,10 +4,8 @@
     "version": "1.0",
     "author": "Dominic P",
     "license": "MIT",
-    "main": [
-        "video-quality-selector.js",
-        "video-quality-selector.css"
-    ],
+    "main": "video-quality-selector.js",
+    "style": "video-quality-selector.css",
     "repository": {
         "type": "git",
         "url": "https://github.com/dominic-p/videojs-resolution-selector.git"
