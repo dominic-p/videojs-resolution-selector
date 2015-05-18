@@ -1,2 +1,2 @@
-# Exclude everything but the contents of the src and dist directory.
+# Exclude everything except the specific files listed in package.json
 **/*
