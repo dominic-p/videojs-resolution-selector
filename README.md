@@ -2,7 +2,7 @@
 Add a resolution selector button to Video.js to allow users to manually adjust the video quality.
 
 ##Install
-You can use bower (`bower install videojs-quality-selector`), npm (`npm install videojs-quality-selector`), or simply download the source from this repo. You must be running Video.js 4.2.0 or higher for this plugin to function. You can download the latest source at the [main Video.js repo](https://github.com/videojs/video.js), or you can get production files from [videojs.com](http://videojs.com), or you can use the CDN files.
+You can use bower (`bower install videojs-resolution-selector`), npm (`npm install videojs-resolution-selector`), or simply download the source from this repo. You must be running Video.js 4.2.0 or higher for this plugin to function. You can download the latest source at the [main Video.js repo](https://github.com/videojs/video.js), or you can get production files from [videojs.com](http://videojs.com), or you can use the CDN files.
 
 ##Usage
 Add an extra attribute to your `<source />` elements.
