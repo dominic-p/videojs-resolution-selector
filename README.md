@@ -27,7 +27,7 @@ videojs( '#my-video', { plugins : { resolutionSelector : {
 
 The plugin also triggers a `changeRes` event on the player instance anytime the resolution is changed, so your code can listen for that and take any desired action on resolution changes:
 ```javascript
-videojs( '#my-video', { plugins : resolutionSelector : {} }, function() {
+videojs( '#my-video', { plugins : { resolutionSelector : {} } }, function() {
 	
 	var player = this;
 	
