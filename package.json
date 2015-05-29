@@ -11,7 +11,7 @@
         "url": "https://github.com/dominic-p/videojs-resolution-selector.git"
     },
     "dependencies": {
-        "video.js": "^4.2.0"
+        "video.js": "^4.4.0"
     },
     "bugs": {
         "url": "https://github.com/dominic-p/videojs-resolution-selector/issues"
