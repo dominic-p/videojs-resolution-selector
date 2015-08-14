@@ -1,2 +1,4 @@
-# Exclude everything except the specific files listed in package.json
+# Exclude everything except the main files
 **/*
+!video-quality-selector.css
+!video-quality-selector.js
