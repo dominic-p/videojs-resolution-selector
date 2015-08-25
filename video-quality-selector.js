@@ -218,7 +218,7 @@
 				available_res.length++;
 			}
 			
-			available_res[current_res].push( sources[i] );
+			available_res[current_res].unshift( sources[i] );
 		}
 		
 		// Check for forced types
