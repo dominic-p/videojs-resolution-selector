@@ -1,10 +1,10 @@
-#Video.js Resolution Selector
+# Video.js Resolution Selector
 Add a resolution selector button to Video.js to allow users to manually adjust the video quality.
 
-##Install
+## Install
 You can use bower (`bower install videojs-resolution-selector`), npm (`npm install videojs-resolution-selector`), or simply download the source from this repo. You must be running Video.js 4.7.3 or higher for this plugin to function. You can download the latest source at the [main Video.js repo](https://github.com/videojs/video.js), or you can get production files from [videojs.com](http://videojs.com), or you can use the CDN files.
 
-##Usage
+## Usage
 Add an extra attribute to your `<source />` elements.
 ```html
 <video>
@@ -39,7 +39,7 @@ videojs( '#my-video', { plugins : { resolutionSelector : {} } }, function() {
 ```
 The plugin provides a `changeRes` method on the `player` object. You can call it like so (after your player is ready): `player.changeRes( '480' )`.
 
-##Simple Example
+## Simple Example
 ```html
 <!DOCTYPE html>
 <html>
@@ -59,10 +59,10 @@ The plugin provides a `changeRes` method on the `player` object. You can call it
 ```
 Please see example.html for a more advanced example.
 
-##Styling the Button
+## Styling the Button
 By default, the button will not be visible. You will either need to include the styles from `video-quality-selector.css` (after the default Video.js styles to override them), or use your own icon for the button. To match the rest of the Video.js controls, I recommend using an icon font to style the button, but it's up to you.
 
-##Mobile devices
+## Mobile devices
 If you want this plugin to work on mobile devices, you need to enable the video.js controls because the native controls are default on iOS and Android.
 
 ```html
